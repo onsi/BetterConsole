@@ -54,12 +54,14 @@ void FilePathHighlighter_highlightFilePaths(NSArray *filePaths, NSTextStorage *t
     for (NSString *filePath in filePaths) {
         NSRange range = [textStorage.string rangeOfString:filePath];
         if (range.location != NSNotFound) {
-            [textStorage addAttributes:@{
-                NSCursorAttributeName : [NSCursor pointingHandCursor],
-                NSForegroundColorAttributeName : [NSColor darkGrayColor],
-                NSUnderlineStyleAttributeName : @1,
-                @"BetterConsoleFilePath" : filePath
-            } range:range];
+            NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
+                                        NSCursor.pointingHandCursor, NSCursorAttributeName,
+                                        NSColor.darkGrayColor, NSForegroundColorAttributeName,
+                                        [NSNumber numberWithInt:1], NSUnderlineStyleAttributeName,
+                                        filePath, @"BetterConsoleFilePath",
+                                        nil];
+            
+            [textStorage addAttributes:attributes range:range];
         }
     }
 }
@@ -74,7 +76,7 @@ void FilePathHighlighter_Handler(CFNotificationCenterRef center, void *observer,
     static char Observer;
 
     if (!objc_getAssociatedObject(self.textView, &Observer)) {
-        objc_setAssociatedObject(self.textView, &Observer, @YES, OBJC_ASSOCIATION_RETAIN);
+        objc_setAssociatedObject(self.textView, &Observer, [NSNumber numberWithBool:YES], OBJC_ASSOCIATION_RETAIN);
 
         CFNotificationCenterAddObserver(
             CFNotificationCenterGetLocalCenter(),
